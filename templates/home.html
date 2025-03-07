@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gordy</title>
+
+  <link rel="icon" href="/static/logo.png" type="image/png">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/lucide.js"></script>
+  <style>
+
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0.8; 
+        transform: translateY(2px); 
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animated-bg {
+      background-color: #212121;
+    }
+  
+    .animate-fade-in-up {
+      opacity: 0.8; 
+      transform: translateY(2px); 
+      animation: fadeInUp 0.3s ease-out forwards; 
+    }
+  
+    .delay-1 {
+      animation-delay: 0.1s; 
+    }
+  
+    .delay-2 {
+      animation-delay: 0.2s;
+    }
+  
+    .delay-3 {
+      animation-delay: 0.3s;
+    }
+  
+    .delay-4 {
+      animation-delay: 0.4s;
+    }
+  
+    #authModal > div {
+      background-color: #212121; 
+      border: 1px solid #333; 
+    }
+     
+    .transition-transform:hover {
+      transform: scale(1.02); 
+    }
+
+    #backToTop {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #4f46e5; 
+      color: white;
+      padding: 0.75rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      display: none;
+      z-index: 100;
+      transition: background-color 0.3s, opacity 0.3s;
+    }
+
+    #backToTop:hover {
+      background-color: #4338ca; 
+    }
+
+    body {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    body::-webkit-scrollbar {
+      display: none;
+    }
+
+    html {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    html::-webkit-scrollbar {
+      display: none;
+    }
+
+  </style>
+</head>
+<body class="min-h-screen animated-bg">
+
+  <script>
+      var show_outage_banner = false; 
+  </script>
+
+  <div id="outage-banner" class="image-feature-banner glass-panel" style="
+    background: #FF6666;
+    color: #fff;
+    padding: 5px;
+    font-size: 0.85rem;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+  ">
+      <span>
+          <strong>⚠️ Full Image Gen Outage:</strong> All image generation features are temporarily unavailable. ⚠️
+      </span>
+      <button onclick="this.parentElement.style.display='none'" style="
+          background: none;
+          border: none;
+          color: #fff;
+          font-size: 1rem;
+          margin-left: 10px;
+          cursor: pointer;
+      ">&times;</button>
+  </div>
+
+  <script>
+    if (!show_outage_banner) {
+      document.getElementById("outage-banner").style.display = "none";
+    }
+  </script>
+
+  <nav class="fixed top-0 left-0 right-0 bg-black/10 backdrop-blur-lg border-b border-white/10 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center animate-fade-in-up delay-1">
+          <img src="/static/logo.png" alt="Gordy Logo" class="h-8 w-8 mr-2 animate-fade-in-up delay-1">
+          <div class="text-2xl font-bold text-white animate-fade-in-up delay-1">Gordy</div>
+        </div>
+
+        <div class="hidden md:block animate-fade-in-up delay-2">
+          <div class="flex items-center space-x-8">
+            <a href="#home" class="text-gray-300 hover:text-white transition-colors">Home</a>
+            <a href="#features" class="text-gray-300 hover:text-white transition-colors">Features</a>
+            <a href="#faq" class="text-gray-300 hover:text-white transition-colors">FAQ</a>
+
+            <div id="authSection" class="flex items-center space-x-4">
+              <button 
+                id="signInButton"
+                class="text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition-colors animate-fade-in-up delay-2"
+              >
+                Sign In
+              </button>
+              <button 
+                id="signUpButton"
+                class="text-indigo-600 border border-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-600 hover:text-white transition-all animate-fade-in-up delay-2"
+              >
+                Sign Up
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="md:hidden animate-fade-in-up delay-2">
+          <button id="mobileMenuButton" class="text-gray-300 hover:text-white">
+            <svg id="menuIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <svg id="closeIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="mobileMenu" class="md:hidden bg-black/10 backdrop-blur-lg border-b border-white/10 hidden">
+      <div class="px-2 pt-2 pb-3 space-y-1">
+        <a href="#home" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white">Home</a>
+        <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white">Features</a>
+        <a href="#faq" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white">FAQ</a>
+
+        <div id="mobileAuthSection" class="space-y-2">
+          <button 
+            id="mobileSignInButton"
+            class="block w-full text-left px-3 py-2 text-gray-300 hover:text-white transition-colors animate-fade-in-up delay-3"
+          >
+            Sign In
+          </button>
+          <button 
+            id="mobileSignUpButton"
+            class="block w-full text-left px-3 py-2 text-gray-300 hover:text-white transition-colors animate-fade-in-up delay-3"
+          >
+            Sign Up
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section id="home" class="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto text-center">
+      <h1 class="text-4xl sm:text-6xl font-bold text-white mb-6 animate-fade-in-up delay-1">
+        Meet Gordy
+      </h1>
+      <p class="text-xl text-gray-300 mb-10 max-w-2xl mx-auto animate-fade-in-up delay-2">
+        Gordy helps you with all your coding needs. From writing code to finding errors.
+      </p>
+      <div class="flex flex-col sm:flex-row justify-center gap-4">
+        <button 
+          id="getStartedButton"
+          class="px-8 py-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 animate-fade-in-up delay-3 transition-transform"
+        >
+          Start Coding with Gordy
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+        <a href="#discover" class="px-8 py-4 border border-white/20 text-white rounded-lg hover:bg-white/10 transition-all animate-fade-in-up delay-3 transition-transform">
+          Discover Gordy
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="py-20 px-4 sm:px-6 lg:px-8 bg-black/20">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-3xl font-bold text-white text-center mb-12 animate-fade-in-up delay-1">What can Gordy do</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="p-6 rounded-lg bg-white/5 border border-white/10 hover:border-indigo-500 transition-colors animate-fade-in-up delay-2 transition-transform">
+          <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-8 w-8 text-indigo-400 mb-4 mx-auto transition-transform duration-200 hover:scale-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 18l6-6-6-6M8 6l-6 6 6 6" />
+          </svg>
+          <h3 class="text-xl font-semibold text-white mb-4">Smart Code Writing</h3>
+          <p class="text-gray-400">Write clean and efficient code easily with Gordy's smart AI.</p>
+        </div>
+
+        <div class="p-6 rounded-lg bg-white/5 border border-white/10 hover:border-indigo-500 transition-colors animate-fade-in-up delay-2 transition-transform">
+          <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-8 w-8 text-indigo-400 mb-4 mx-auto transition-transform duration-200 hover:scale-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          <h3 class="text-xl font-semibold text-white mb-4">Easy Error Finding</h3>
+          <p class="text-gray-400">Find and fix code errors quickly.</p>
+        </div>
+
+       <div class="p-6 rounded-lg bg-white/5 border border-white/10 hover:border-indigo-500 transition-colors animate-fade-in-up delay-2 transition-transform">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-8 w-8 text-indigo-400 mb-4 mx-auto transition-transform duration-200 hover:scale-100" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.637 0-8.577-3.007-9.964-7.178Z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+        </svg>
+        <h3 class="text-xl font-semibold text-white mb-4">Enhanced Visual Analytics</h3>
+        <p class="text-gray-400">Your able to see preivew of SOME of the AI generated code.</p>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="discover" class="py-20 px-4 sm:px-6 lg:px-8 bg-black/30">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-3xl font-bold text-white text-center mb-12 animate-fade-in-up delay-1">Discover Gordy: The thing I spent a long long time on :)</h2>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="p-6 rounded-lg bg-white/5 border border-white/10 hover:border-indigo-500 transition-colors animate-fade-in-up delay-2 transition-transform">
+          <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-8 w-8 text-indigo-400 mb-4 mx-auto transition-transform duration-200 hover:scale-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 18l6-6-6-6M8 6l-6 6 6 6" />
+          </svg>
+          <h3 class="text-xl font-semibold text-white mb-4">Smart Code Writing</h3>
+          <p class="text-gray-400">Generate clean, efficient, and optimized code snippets.</p>
+        </div>
+
+        <div class="p-6 rounded-lg bg-white/5 border border-white/10 hover:border-indigo-500 transition-colors animate-fade-in-up delay-2 transition-transform">
+          <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-8 w-8 text-indigo-400 mb-4 mx-auto transition-transform duration-200 hover:scale-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          <h3 class="text-xl font-semibold text-white mb-4">Debugging</h3>
+          <p class="text-gray-400">Identify and resolve code errors with Gordy.</p>
+        </div>
+
+        <div class="p-6 rounded-lg bg-white/5 border border-white/10 hover:border-indigo-500 transition-colors animate-fade-in-up delay-2 transition-transform">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-8 w-8 text-indigo-400 mb-4 mx-auto transition-transform duration-200 hover:scale-100" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z" />
+          </svg>
+          <h3 class="text-xl font-semibold text-white mb-4">Enhanced Code Suggestions</h3>
+          <p class="text-gray-400">Get intelligent code suggestions to speed up your development process.</p>
+        </div>
+
+        <div class="p-6 rounded-lg bg-white/5 border border-white/10 hover:border-indigo-500 transition-colors animate-fade-in-up delay-2 transition-transform">
+          <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-8 w-8 text-indigo-400 mb-4 mx-auto transition-transform duration-200 hover:scale-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H16M8 11H16M8 15H16M12 19V3" />
+          </svg>
+          <h3 class="text-xl font-semibold text-white mb-4">Code Reviews</h3>
+          <p class="text-gray-400">Gordy will review all messages and will provide you with comprehensive automated reviews and suggestions.</p>
+        </div>
+
+        <div class="p-6 rounded-lg bg-white/5 border border-white/10 hover:border-indigo-500 transition-colors animate-fade-in-up delay-2 transition-transform">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-8 w-8 text-indigo-400 mb-4 mx-auto transition-transform duration-200 hover:scale-100" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+          </svg>
+          <h3 class="text-xl font-semibold text-white mb-4">Documentation Assistance</h3>
+          <p class="text-gray-400">Gordy will help make some clear and concise documentation to help you with your code.</p>
+        </div>
+
+      <div class="p-6 rounded-lg bg-white/5 border border-white/10 hover:border-indigo-500 transition-colors animate-fade-in-up delay-2 transition-transform">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-8 w-8 text-indigo-400 mb-4 mx-auto transition-transform duration-200 hover:scale-100">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+        </svg>
+        <h3 class="text-xl font-semibold text-white mb-4">Enhanced Visual Analytics</h3>
+        <p class="text-gray-400">Gain insights with clear, interactive visual analytics that highlight key trends and metrics.</p>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" class="py-20 px-4 sm:px-6 lg:px-8 bg-black/20">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-3xl font-bold text-white text-center mb-12 animate-fade-in-up delay-1">Frequently Asked Questions</h2>
+      <div class="max-w-2xl mx-auto space-y-6">
+        <div class="bg-white/5 p-6 rounded-lg border border-white/10">
+          <h3 class="text-xl font-semibold text-white mb-2">What is Gordy?</h3>
+          <p class="text-gray-400">Gordy is an AI-powered coding assistant designed to help you write, debug, and optimize your code efficiently.</p>
+        </div>
+
+        <div class="bg-white/5 p-6 rounded-lg border border-white/10">
+          <h3 class="text-xl font-semibold text-white mb-2">Is Gordy free?</h3>
+          <p class="text-gray-400">Yes, Gordy is free cause idk what im doing :) </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-black/20 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-6 md:mb-0 text-center md:text-left">
+          <img src="/static/logo.png" alt="Gordy Logo" class="h-8 w-8 inline-block mr-2">
+          <span class="text-white font-bold text-xl">Gordy</span>
+          <p class="text-gray-400 mt-2">Hi :)</p>
+        </div>
+
+        <div class="flex space-x-6 mb-6 md:mb-0">
+          <a href="#home" class="text-gray-300 hover:text-white transition-colors">Home</a>
+          <a href="#features" class="text-gray-300 hover:text-white transition-colors">Features</a>
+          <a href="#faq" class="text-gray-300 hover:text-white transition-colors">FAQ</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div id="backToTop" title="Back to Top">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+    </svg>
+  </div>
+
+  <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 hidden">
+    <div class="bg-gray-900 rounded-lg p-8 max-w-md w-full border border-white/10 animate-fade-in-up delay-1">
+      <div class="flex justify-between items-center mb-6 animate-fade-in-up delay-1">
+        <h2 id="authTitle" class="text-2xl font-bold text-white">Sign In to Gordy</h2>
+        <button id="closeModalButton" class="text-gray-400 hover:text-white" aria-label="Close Authentication Modal">
+          <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <form id="authForm" class="space-y-4 animate-fade-in-up delay-2">
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-300 mb-1">Username</label>
+          <div class="relative">
+            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.938 13.938 0 0112 15c2.757 0 5.29.834 7.879 2.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <input
+              type="text"
+              id="username"
+              class="w-full bg-black/20 border border-white/10 rounded-lg py-2 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 animate-fade-in-up delay-3"
+              placeholder="Enter your username"
+              required
+            />
+          </div>
+        </div>
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
+          <div class="relative">
+            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.656 0 3-1.344 3-3S13.656 5 12 5s-3 1.344-3 3 1.344 3 3 3zm0 2c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z" />
+            </svg>
+            <input
+              type="password"
+              id="password"
+              class="w-full bg-black/20 border border-white/10 rounded-lg py-2 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 animate-fade-in-up delay-3"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+        </div>
+        <button
+          type="submit"
+          class="w-full bg-indigo-600 text-white rounded-lg py-2 hover:bg-indigo-700 transition-colors animate-fade-in-up delay-4"
+        >
+          Sign In
+        </button>
+      </form>
+      <p class="mt-4 text-center text-gray-400 animate-fade-in-up delay-4">
+        Don't have an account? 
+        <button id="toggleAuthMode" class="text-indigo-400 hover:text-indigo-300">
+          Sign Up
+        </button>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const mobileMenuButton = document.getElementById('mobileMenuButton');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuIcon = document.getElementById('menuIcon');
+    const closeIcon = document.getElementById('closeIcon');
+
+    mobileMenuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+      menuIcon.classList.toggle('hidden');
+      closeIcon.classList.toggle('hidden');
+    });
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          window.scrollTo({
+            top: target.offsetTop - 64,
+            behavior: 'smooth'
+          });
+        }
+        if (!mobileMenu.classList.contains('hidden')) {
+          mobileMenu.classList.add('hidden');
+          menuIcon.classList.remove('hidden');
+          closeIcon.classList.add('hidden');
+        }
+      });
+    });
+
+    const authModal = document.getElementById('authModal');
+    const signInButton = document.getElementById('signInButton');
+    const signUpButton = document.getElementById('signUpButton');
+    const mobileSignInButton = document.getElementById('mobileSignInButton');
+    const mobileSignUpButton = document.getElementById('mobileSignUpButton');
+    const closeModalButton = document.getElementById('closeModalButton');
+    const authTitle = document.getElementById('authTitle');
+    const authForm = document.getElementById('authForm');
+    const toggleAuthMode = document.getElementById('toggleAuthMode');
+
+    let isSignIn = true;
+
+    function openModal(signIn = true) {
+      isSignIn = signIn;
+      authTitle.textContent = signIn ? 'Sign In to Gordy' : 'Sign Up for Gordy';
+      authForm.querySelector('button[type="submit"]').textContent = signIn ? 'Sign In' : 'Sign Up';
+      toggleAuthMode.textContent = signIn ? 'Sign Up' : 'Sign In';
+      authModal.classList.remove('hidden');
+      clearError();
+    }
+
+    function closeModal() {
+      authModal.classList.add('hidden');
+      clearError();
+    }
+
+    signInButton.addEventListener('click', () => openModal(true));
+    signUpButton.addEventListener('click', () => openModal(false));
+    mobileSignInButton.addEventListener('click', () => {
+      openModal(true);
+      mobileMenu.classList.add('hidden');
+      menuIcon.classList.remove('hidden');
+      closeIcon.classList.add('hidden');
+    });
+    mobileSignUpButton.addEventListener('click', () => {
+      openModal(false);
+      mobileMenu.classList.add('hidden');
+      menuIcon.classList.remove('hidden');
+      closeIcon.classList.add('hidden');
+    });
+
+    closeModalButton.addEventListener('click', closeModal);
+
+    toggleAuthMode.addEventListener('click', () => {
+      isSignIn = !isSignIn;
+      authTitle.textContent = isSignIn ? 'Sign In to Gordy' : 'Sign Up for Gordy';
+      authForm.querySelector('button[type="submit"]').textContent = isSignIn ? 'Sign In' : 'Sign Up';
+      toggleAuthMode.textContent = isSignIn ? 'Sign Up' : 'Sign In';
+      clearError();
+    });
+
+    authForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      if (isSignIn) {
+        login(username, password);
+      } else {
+        signup(username, password, password); 
+      }
+    });
+
+    function getAccounts() {
+      return JSON.parse(localStorage.getItem('accounts') || '{}');
+    }
+
+    function saveAccounts(accounts) {
+      localStorage.setItem('accounts', JSON.stringify(accounts));
+    }
+
+    function login(username, password) {
+      const accounts = getAccounts();
+      if (accounts[username] && accounts[username].password === password) {
+          localStorage.setItem('loggedInUser', username);
+          updateAuthUI(); 
+          window.location.href = '/chat'; 
+      } else {
+          showError('Invalid credentials');
+      }
+    }
+
+    function signup(username, password, confirmPassword) {
+      if (password !== confirmPassword) {
+          showError('Passwords do not match');
+          return;
+      }
+      const accounts = getAccounts();
+      if (accounts[username]) {
+          showError('Username already exists');
+          return;
+      }
+      accounts[username] = { password: password, chats: [], selectedModel: 'default' };
+      saveAccounts(accounts);
+      localStorage.setItem('loggedInUser', username);
+      updateAuthUI(); 
+      window.location.href = '/chat'; 
+    }
+
+    function showError(msg) {
+      alert(msg); 
+    }
+
+    function clearError() {
+    }
+
+    function updateAuthUI() {
+      const authSection = document.getElementById('authSection');
+      const mobileAuthSection = document.getElementById('mobileAuthSection');
+      const loggedInUser = localStorage.getItem('loggedInUser');
+
+      if (loggedInUser) {
+        authSection.innerHTML = `
+          <span class="text-gray-300">Hello, <strong>${loggedInUser}</strong></span>
+          <button 
+            id="logoutButton"
+            class="text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-colors"
+          >
+            Logout
+          </button>
+        `;
+
+        mobileAuthSection.innerHTML = `
+          <span class="block text-gray-300">Hello, <strong>${loggedInUser}</strong></span>
+          <button 
+            id="mobileLogoutButton"
+            class="block w-full text-left px-3 py-2 text-gray-300 hover:text-white transition-colors"
+          >
+            Logout
+          </button>
+        `;
+
+        document.getElementById('logoutButton').addEventListener('click', logout);
+        document.getElementById('mobileLogoutButton').addEventListener('click', () => {
+          logout();
+          mobileMenu.classList.add('hidden');
+          menuIcon.classList.remove('hidden');
+          closeIcon.classList.add('hidden');
+        });
+      } else {
+        authSection.innerHTML = `
+          <button 
+            id="signInButton"
+            class="text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg transition-colors animate-fade-in-up delay-2"
+          >
+            Sign In
+          </button>
+          <button 
+            id="signUpButton"
+            class="text-indigo-600 border border-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-600 hover:text-white transition-all animate-fade-in-up delay-2"
+          >
+            Sign Up
+          </button>
+        `;
+
+        mobileAuthSection.innerHTML = `
+          <button 
+            id="mobileSignInButton"
+            class="block w-full text-left px-3 py-2 text-gray-300 hover:text-white transition-colors animate-fade-in-up delay-3"
+          >
+            Sign In
+          </button>
+          <button 
+            id="mobileSignUpButton"
+            class="block w-full text-left px-3 py-2 text-gray-300 hover:text-white transition-colors animate-fade-in-up delay-3"
+          >
+            Sign Up
+          </button>
+        `;
+
+        document.getElementById('signInButton').addEventListener('click', () => openModal(true));
+        document.getElementById('signUpButton').addEventListener('click', () => openModal(false));
+        document.getElementById('mobileSignInButton').addEventListener('click', () => {
+          openModal(true);
+          mobileMenu.classList.add('hidden');
+          menuIcon.classList.remove('hidden');
+          closeIcon.classList.add('hidden');
+        });
+        document.getElementById('mobileSignUpButton').addEventListener('click', () => {
+          openModal(false);
+          mobileMenu.classList.add('hidden');
+          menuIcon.classList.remove('hidden');
+          closeIcon.classList.add('hidden');
+        });
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('loggedInUser');
+      window.location.href = '/';
+    }
+
+    document.addEventListener('DOMContentLoaded', updateAuthUI);
+
+    window.addEventListener('click', (e) => {
+      if (e.target === authModal) {
+        closeModal();
+      }
+    });
+
+    const getStartedButton = document.getElementById('getStartedButton');
+    getStartedButton.addEventListener('click', () => {
+      window.location.href = '/chat'; 
+    });
+
+    const backToTopButton = document.getElementById('backToTop');
+
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopButton.style.display = 'block';
+        backToTopButton.style.opacity = '1';
+      } else {
+        backToTopButton.style.opacity = '0';
+        setTimeout(() => {
+          backToTopButton.style.display = 'none';
+        }, 300);
+      }
+    });
+
+    backToTopButton.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+
+    (function() {
+      let secretCode = "";
+      const actions = {
+        "gordy": showGordyOverlay,
+        "rainbow": startRainbowMode,
+        "dance": startDanceAnimation,
+        "fireworks": launchFireworks
+      };
+
+      document.addEventListener('keydown', function(e) {
+        secretCode += e.key;
+        for (const key in actions) {
+          if (secretCode.toLowerCase().includes(key)) {
+            actions[key]();
+            secretCode = "";
+            break;
+          }
+        }
+        if (secretCode.length > 30) {
+          secretCode = secretCode.slice(-30);
+        }
+      });
+
+      function showGordyOverlay() {
+        if (!document.getElementById("secretOverlay")) {
+          const overlay = document.createElement('div');
+          overlay.id = "secretOverlay";
+          overlay.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 10000;";
+          overlay.innerHTML = "<div style='color: #4f46e5; font-size: 2.5rem; font-weight: bold; text-align: center;'>HI :)</div>";
+          document.body.appendChild(overlay);
+          setTimeout(() => overlay.remove(), 3000);
+        }
+      }
+
+      function startRainbowMode() {
+        const originalBg = document.body.style.backgroundColor;
+        document.body.style.transition = "background-color 0.5s";
+        const colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
+        let i = 0;
+        const interval = setInterval(() => {
+          document.body.style.backgroundColor = colors[i % colors.length];
+          i++;
+        }, 300);
+        setTimeout(() => {
+          clearInterval(interval);
+          document.body.style.backgroundColor = originalBg;
+        }, 5000);
+      }
+
+      function startDanceAnimation() {
+        const danceDiv = document.createElement('div');
+        danceDiv.id = "danceDiv";
+        danceDiv.style.cssText = "position: fixed; bottom: 10px; left: -200px; z-index: 10000;";
+        danceDiv.innerHTML = "<img src='/static/dance.gif' alt='Dance' style='width: 200px;'>";
+        document.body.appendChild(danceDiv);
+        danceDiv.animate([
+          { transform: 'translateX(0)' },
+          { transform: 'translateX(120vw)' }
+        ], {
+          duration: 5000,
+          easing: 'linear'
+        });
+        setTimeout(() => danceDiv.remove(), 5000);
+      }
+
+      function launchFireworks() {
+        const fireworksContainer = document.createElement('div');
+        fireworksContainer.id = "fireworksContainer";
+        fireworksContainer.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10000;";
+        document.body.appendChild(fireworksContainer);
+        for (let i = 0; i < 30; i++) {
+          const particle = document.createElement('div');
+          particle.style.cssText = "position: absolute; width: 10px; height: 10px; background-color: " + getRandomColor() + "; border-radius: 50%;";
+          particle.style.top = "50%";
+          particle.style.left = "50%";
+          fireworksContainer.appendChild(particle);
+          const angle = Math.random() * 2 * Math.PI;
+          const distance = Math.random() * 250 + 50;
+          const x = Math.cos(angle) * distance;
+          const y = Math.sin(angle) * distance;
+          particle.animate([
+            { transform: 'translate(0, 0)', opacity: 1 },
+            { transform: `translate(${x}px, ${y}px)`, opacity: 0 }
+          ], {
+            duration: 1500,
+            easing: 'ease-out'
+          });
+        }
+        setTimeout(() => {
+          fireworksContainer.remove();
+        }, 2000);
+      }
+
+      function getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+      }
+    })();
+  </script>
+</body>
+</html>

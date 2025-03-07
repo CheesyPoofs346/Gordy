@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Control Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <style>
+        input[type="password"] {
+            -webkit-text-security: disc;
+            color: black;
+        }
+    </style>
+</head>
+<body style="background-color: #212121; color: white;">
+    <div class="container mx-auto p-6">
+        {% if not is_logged_in %}
+            <!-- Login Form -->
+            <div class="flex items-center justify-center h-screen">
+                <div style="background-color: #212121; border: 1px solid #333333; padding: 20px; border-radius: 10px;">
+                    <h1 class="text-2xl font-bold mb-6 text-center">Admin Login</h1>
+                    {% if error %}
+                        <p class="text-center mb-4">{{ error }}</p>
+                    {% endif %}
+                    <form method="POST">
+                        <!-- Hidden Input for Username -->
+                        <input type="hidden" id="username" name="username" value="admin" />
+                        <div class="mb-6">
+                            <label for="password" class="block mb-2">Password</label>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                style="width: 100%; padding: 10px; border: 1px solid #333333; border-radius: 5px;"
+                                required
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            style="width: 100%; padding: 10px; background-color: #333333; color: white; border: none; border-radius: 5px;"
+                        >
+                            Login
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <!-- Admin Panel -->
+            <h1 class="text-3xl font-bold mb-6">Admin Control Panel</h1>
+            <div class="mb-6 flex justify-between">
+                <a href="/" style="background-color: #333333; color: white; padding: 10px; border-radius: 5px;">Back to Main App</a>
+                <a href="/logout" style="background-color: #333333; color: white; padding: 10px; border-radius: 5px;">Logout</a>
+            </div>
+
+            <h2 class="text-2xl mb-4">Dashboard Overview</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div style="background-color: #212121; border: 1px solid #333333; padding: 20px; border-radius: 10px;">
+                    <h3 class="text-lg font-bold mb-2">Total User Messages</h3>
+                    <p class="text-3xl font-bold">{{ user_message_count }}</p>
+                </div>
+                <div style="background-color: #212121; border: 1px solid #333333; padding: 20px; border-radius: 10px;">
+                    <h3 class="text-lg font-bold mb-2">Total AI Responses</h3>
+                    <p class="text-3xl font-bold">{{ assistant_message_count }}</p>
+                </div>
+                <div style="background-color: #212121; border: 1px solid #333333; padding: 20px; border-radius: 10px;">
+                    <h3 class="text-lg font-bold mb-2">Unique Users</h3>
+                    <p class="text-3xl font-bold">{{ unique_user_count }}</p>
+                </div>
+            </div>
+
+            <h2 class="text-2xl mb-4">Model Usage Statistics</h2>
+            <div style="background-color: #212121; border: 1px solid #333333; padding: 20px; border-radius: 10px;">
+                <canvas id="modelUsageChart" style="max-height: 250px;"></canvas>
+            </div>
+
+            <h2 class="text-2xl mb-4">Conversation History</h2>
+            <div class="mb-4">
+                    <input 
+                    id="search-bar" 
+                    style="width: 100%; padding: 10px; border: 1px solid #333333; border-radius: 5px; background-color: #212121; color: white;" 
+                    placeholder="Search conversations..." 
+                    oninput="filterConversations()"
+                />
+            </div>
+
+            <div style="overflow-y: auto; max-height: 500px; border: 1px solid #333333; padding: 20px; border-radius: 10px; background-color: #212121;">
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th style="padding: 10px; border-bottom: 1px solid #333333;">Timestamp</th>
+                            <th style="padding: 10px; border-bottom: 1px solid #333333;">Role</th>
+                            <th style="padding: 10px; border-bottom: 1px solid #333333;">Username</th>
+                            <th style="padding: 10px; border-bottom: 1px solid #333333;">Message</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for conversation in conversations %}
+                        <tr style="border-bottom: 1px solid #333333;">
+                            <td style="padding: 10px;">{{ conversation.timestamp }}</td>
+                            <td style="padding: 10px;">{{ conversation.role }}</td>
+                            <td style="padding: 10px;">{{ conversation.username }}</td>
+                            <td style="padding: 10px;">{{ conversation.content }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-6">
+                <button
+                    onclick="downloadCSV()"
+                    style="background-color: #333333; color: white; padding: 10px; border: none; border-radius: 5px;"
+                >
+                    Download Conversation History
+                </button>
+            </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        {% if is_logged_in %}
+        const ctx = document.getElementById("modelUsageChart").getContext("2d");
+        const modelUsageChart = new Chart(ctx, {
+            type: "pie",
+            data: {
+                labels: Object.keys({{ model_usage|tojson }}),
+                datasets: [{
+                    data: Object.values({{ model_usage|tojson }}),
+                    backgroundColor: ["#6366F1", "#34D399"],
+                }],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: "top",
+                    },
+                },
+            },
+        });
+        {% endif %}
+    </script>
+</body>
+</html>

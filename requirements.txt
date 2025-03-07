@@ -1,0 +1,13 @@
+Flask
+Flask-Login
+Flask-WTF
+SQLAlchemy
+Werkzeug
+openai
+gunicorn
+python-dotenv
+flask_sqlalchemy
+requests
+pillow
+rapidfuzz
+google-generativeai
