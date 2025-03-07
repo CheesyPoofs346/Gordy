@@ -19,7 +19,7 @@ Follow these steps to set up and run **Gordy**:
 
 2. **Navigate to the project folder**
    ```sh
-   cd Gordy-main/Gordy-main
+   cd C:\Users\yourusername\Downloads\Gordy-main\Gordy-main
    ```
 
 3. **Install required dependencies**
@@ -30,3 +30,4 @@ Follow these steps to set up and run **Gordy**:
 4. **Run the application**
    ```sh
    python app.py
+   ```
