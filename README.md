@@ -1,12 +1,12 @@
 # Gordy
 
-## Setup Instructions
+## Setup
 
 Follow these steps to set up and run **Gordy**:
 
 ### Prerequisites
 - You need to have **Python** installed on your system.
-- You need to have **pip** (Python's package manager) installed.
+- You need to have **pip** installed.
 
 ### Installation Steps
 
