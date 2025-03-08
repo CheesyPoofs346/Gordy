@@ -13,7 +13,7 @@ Follow these steps to set up and run **Gordy**:
 1. **Clone or download the repository**
    - If using Git, run:
      ```sh
-     git clone https://github.com/yourusername/Gordy.git
+     git clone https://github.com/CheesyPoofs346/Gordy.git
      ```
    - If you downloaded the ZIP file, extract it.
 
